@@ -3,20 +3,20 @@
  * AML Disassembler version 20131218-64 [Jan  8 2014]
  * Copyright (c) 2000 - 2013 Intel Corporation
  * 
- * Disassembly of iASL5ydeM0.aml, Sat Apr  1 09:55:51 2017
+ * Disassembly of iASLAXSvQ4.aml, Sat Apr  1 09:56:38 2017
  *
  * Original Table Header:
  *     Signature        "DSDT"
- *     Length           0x0000D6A8 (54952)
+ *     Length           0x0000D78B (55179)
  *     Revision         0x01 **** 32-bit table (V1), no 64-bit math support
- *     Checksum         0xB5
+ *     Checksum         0x2A
  *     OEM ID           "HP    "
  *     OEM Table ID     "1670    "
  *     OEM Revision     0x00000000 (0)
  *     Compiler ID      "INTL"
  *     Compiler Version 0x20100331 (537920305)
  */
-DefinitionBlock ("iASL5ydeM0.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
+DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 {
     /*
      * iASL Warning: There were 6 external control methods found during
@@ -10448,12 +10448,72 @@ DefinitionBlock ("iASL5ydeM0.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
             Device (PEGP)
             {
-                Name (_ADR, Zero)  // _ADR: Address
-                Name (_PRW, Package (0x02)  // _PRW: Power Resources for Wake
+                Name (_ADR, 0x00010000)  // _ADR: Address
+                Device (GFX0)
                 {
-                    0x09, 
-                    0x04
-                })
+                    Name (_ADR, Zero)  // _ADR: Address
+                    Method (_DSM, 4, NotSerialized)  // _DSM: Device-Specific Method
+                    {
+                        Store (Package (0x0C)
+                            {
+                                "AAPL,slot-name", 
+                                Buffer (0x07)
+                                {
+                                    "Slot-1"
+                                }, 
+
+                                "@0,name", 
+                                Buffer (0x0D)
+                                {
+                                    "ATY,Aji"
+                                }, 
+
+                                "@1,name", 
+                                Buffer (0x0D)
+                                {
+                                    "ATY,Aji"
+                                }, 
+
+                                "@2,name", 
+                                Buffer (0x0D)
+                                {
+                                    "ATY,Aji"
+                                }, 
+
+                                "@3,name", 
+                                Buffer (0x0D)
+                                {
+                                    "ATY,Aji"
+                                }, 
+
+                                "hda-gfx", 
+                                Buffer (0x0A)
+                                {
+                                    "onboard-1"
+                                }
+                            }, Local0)
+                        DTGP (Arg0, Arg1, Arg2, Arg3, RefOf (Local0))
+                        Return (Local0)
+                    }
+                }
+
+                Device (HDAU)
+                {
+                    Name (_ADR, One)  // _ADR: Address
+                    Method (_DSM, 4, NotSerialized)  // _DSM: Device-Specific Method
+                    {
+                        Store (Package (0x02)
+                            {
+                                "hda-gfx", 
+                                Buffer (0x0A)
+                                {
+                                    "onboard-1"
+                                }
+                            }, Local0)
+                        DTGP (Arg0, Arg1, Arg2, Arg3, RefOf (Local0))
+                        Return (Local0)
+                    }
+                }
             }
 
             Device (VGA)
