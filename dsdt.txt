@@ -3,20 +3,20 @@
  * AML Disassembler version 20131218-64 [Jan  8 2014]
  * Copyright (c) 2000 - 2013 Intel Corporation
  * 
- * Disassembly of iASLAXSvQ4.aml, Sat Apr  1 09:56:38 2017
+ * Disassembly of iASLJuGTvV.aml, Sat Apr  1 09:57:55 2017
  *
  * Original Table Header:
  *     Signature        "DSDT"
- *     Length           0x0000D78B (55179)
+ *     Length           0x0000D842 (55362)
  *     Revision         0x01 **** 32-bit table (V1), no 64-bit math support
- *     Checksum         0x2A
+ *     Checksum         0x3A
  *     OEM ID           "HP    "
  *     OEM Table ID     "1670    "
  *     OEM Revision     0x00000000 (0)
  *     Compiler ID      "INTL"
  *     Compiler Version 0x20100331 (537920305)
  */
-DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
+DefinitionBlock ("iASLJuGTvV.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 {
     /*
      * iASL Warning: There were 6 external control methods found during
@@ -37,7 +37,7 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
     External (TNOT, MethodObj)    // Warning: Unresolved Method, guessing 0 arguments (may be incorrect, see warning above)
 
     External (_PR_.CPU0._PPC, IntObj)
-    External (_SB_.PCI0.GFX0.DSWR)
+    External (_SB_.PCI0.IGPU.DSWR)
     External (CFGD)
     External (HWID, IntObj)
     External (PDC0)
@@ -579,7 +579,7 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                         If (IGDS)
                         {
                             Store (Local0, LIDS)
-                            Store (Local0, ^^PCI0.GFX0.CLID)
+                            Store (Local0, ^^PCI0.IGPU.CLID)
                         }
                     }
                     Else
@@ -587,7 +587,7 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                         Store (One, Local0)
                         If (IGDS)
                         {
-                            Store (Local0, ^^PCI0.GFX0.CLID)
+                            Store (Local0, ^^PCI0.IGPU.CLID)
                         }
                     }
 
@@ -2918,7 +2918,7 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                         Store (CMSR (0x46), Local5)
                         If (LOr (LEqual (IGDS, One), LLessEqual (Local5, One)))
                         {
-                            ^^^GFX0.GHDS (Zero)
+                            ^^^IGPU.GHDS (Zero)
                             Sleep (0xC8)
                         }
                         Else
@@ -2928,7 +2928,7 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                             {
                                 If (LNotEqual (^^^PEG0.VGA.SVID, 0xFFFF))
                                 {
-                                    Store (One, ^^^GFX0.DSWR)
+                                    Store (One, ^^^IGPU.DSWR)
                                     Notify (^^^PEG0.VGA, 0x81)
                                 }
                             }
@@ -3810,13 +3810,7 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                     Name (BUF0, ResourceTemplate ()
                     {
                         IRQNoFlags ()
-                            {0}
-                        IRQNoFlags (_Y0F)
-                            {8}
-                        IRQNoFlags ()
-                            {11}
-                        IRQNoFlags ()
-                            {15}
+                            {0,8,11,15}
                         Memory32Fixed (ReadWrite,
                             0xFED00000,         // Address Base
                             0x00000400,         // Address Length
@@ -3846,7 +3840,7 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                     {
                         If (HPAE)
                         {
-                            CreateDWordField (BUF0, \_SB.PCI0.LPCB.HPET._Y0F._INT, HPT0)  // _INT: Interrupts
+                            CreateDWordField (BUF0, 0x04, HPT0)
                             If (LEqual (HPAS, One))
                             {
                                 Store (0xFED01000, HPT0)
@@ -5425,40 +5419,40 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                             Store (Zero, Local3)
                             Store (0xAE, Index (DerefOf (Index (Local0, 0x02)), Zero))
                             Store (One, Index (DerefOf (Index (Local0, 0x02)), One))
-                            If (LOr (LEqual (^^PCI0.GFX0.CADL, 0x0100), LEqual (^^PCI0.GFX0.CAL2, 0x0100)))
+                            If (LOr (LEqual (^^PCI0.IGPU.CADL, 0x0100), LEqual (^^PCI0.IGPU.CAL2, 0x0100)))
                             {
                                 Or (Local3, 0x02, Local3)
                             }
 
-                            If (LOr (LEqual (^^PCI0.GFX0.CADL, 0x0400), LEqual (^^PCI0.GFX0.CAL2, 0x0400)))
+                            If (LOr (LEqual (^^PCI0.IGPU.CADL, 0x0400), LEqual (^^PCI0.IGPU.CAL2, 0x0400)))
                             {
                                 Or (Local3, One, Local3)
                             }
 
-                            If (LOr (LEqual (^^PCI0.GFX0.CADL, 0x0300), LEqual (^^PCI0.GFX0.CAL2, 0x0300)))
+                            If (LOr (LEqual (^^PCI0.IGPU.CADL, 0x0300), LEqual (^^PCI0.IGPU.CAL2, 0x0300)))
                             {
                                 Or (Local3, 0x10, Local3)
                             }
 
                             Store (Local3, Index (DerefOf (Index (Local0, 0x02)), 0x03))
                             Store (Zero, Local3)
-                            If (LOr (LEqual (^^PCI0.GFX0.NADL, 0x0100), LEqual (^^PCI0.GFX0.NDL2, 0x0100)))
+                            If (LOr (LEqual (^^PCI0.IGPU.NADL, 0x0100), LEqual (^^PCI0.IGPU.NDL2, 0x0100)))
                             {
                                 Or (Local3, 0x02, Local3)
                             }
 
-                            If (LOr (LEqual (^^PCI0.GFX0.NADL, 0x0400), LEqual (^^PCI0.GFX0.NDL2, 0x0400)))
+                            If (LOr (LEqual (^^PCI0.IGPU.NADL, 0x0400), LEqual (^^PCI0.IGPU.NDL2, 0x0400)))
                             {
                                 Or (Local3, One, Local3)
                             }
 
-                            If (LOr (LEqual (^^PCI0.GFX0.NADL, 0x0300), LEqual (^^PCI0.GFX0.NDL2, 0x0300)))
+                            If (LOr (LEqual (^^PCI0.IGPU.NADL, 0x0300), LEqual (^^PCI0.IGPU.NDL2, 0x0300)))
                             {
                                 Or (Local3, 0x10, Local3)
                             }
 
                             Store (Local3, Index (DerefOf (Index (Local0, 0x02)), 0x02))
-                            ^^PCI0.GFX0.GHDS (Zero)
+                            ^^PCI0.IGPU.GHDS (Zero)
                         }
                         Else
                         {
@@ -5467,7 +5461,7 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                             {
                                 If (LNotEqual (^^PCI0.PEG0.VGA.SVID, 0xFFFF))
                                 {
-                                    Store (One, ^^PCI0.GFX0.DSWR)
+                                    Store (One, ^^PCI0.IGPU.DSWR)
                                     Notify (^^PCI0.PEG0.VGA, 0x81)
                                 }
                             }
@@ -5539,40 +5533,40 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                         Store (Zero, Local3)
                         Store (0xAE, Index (DerefOf (Index (Local0, 0x02)), Zero))
                         Store (One, Index (DerefOf (Index (Local0, 0x02)), One))
-                        If (LOr (LEqual (^^PCI0.GFX0.CADL, 0x0100), LEqual (^^PCI0.GFX0.CAL2, 0x0100)))
+                        If (LOr (LEqual (^^PCI0.IGPU.CADL, 0x0100), LEqual (^^PCI0.IGPU.CAL2, 0x0100)))
                         {
                             Or (Local3, 0x02, Local3)
                         }
 
-                        If (LOr (LEqual (^^PCI0.GFX0.CADL, 0x0400), LEqual (^^PCI0.GFX0.CAL2, 0x0400)))
+                        If (LOr (LEqual (^^PCI0.IGPU.CADL, 0x0400), LEqual (^^PCI0.IGPU.CAL2, 0x0400)))
                         {
                             Or (Local3, One, Local3)
                         }
 
-                        If (LOr (LEqual (^^PCI0.GFX0.CADL, 0x0300), LEqual (^^PCI0.GFX0.CAL2, 0x0300)))
+                        If (LOr (LEqual (^^PCI0.IGPU.CADL, 0x0300), LEqual (^^PCI0.IGPU.CAL2, 0x0300)))
                         {
                             Or (Local3, 0x10, Local3)
                         }
 
                         Store (Local3, Index (DerefOf (Index (Local0, 0x02)), 0x03))
                         Store (Zero, Local3)
-                        If (LOr (LEqual (^^PCI0.GFX0.NADL, 0x0100), LEqual (^^PCI0.GFX0.NDL2, 0x0100)))
+                        If (LOr (LEqual (^^PCI0.IGPU.NADL, 0x0100), LEqual (^^PCI0.IGPU.NDL2, 0x0100)))
                         {
                             Or (Local3, 0x02, Local3)
                         }
 
-                        If (LOr (LEqual (^^PCI0.GFX0.NADL, 0x0400), LEqual (^^PCI0.GFX0.NDL2, 0x0400)))
+                        If (LOr (LEqual (^^PCI0.IGPU.NADL, 0x0400), LEqual (^^PCI0.IGPU.NDL2, 0x0400)))
                         {
                             Or (Local3, One, Local3)
                         }
 
-                        If (LOr (LEqual (^^PCI0.GFX0.NADL, 0x0300), LEqual (^^PCI0.GFX0.NDL2, 0x0300)))
+                        If (LOr (LEqual (^^PCI0.IGPU.NADL, 0x0300), LEqual (^^PCI0.IGPU.NDL2, 0x0300)))
                         {
                             Or (Local3, 0x10, Local3)
                         }
 
                         Store (Local3, Index (DerefOf (Index (Local0, 0x02)), 0x02))
-                        ^^PCI0.GFX0.GHDS (Zero)
+                        ^^PCI0.IGPU.GHDS (Zero)
                     }
                     Else
                     {
@@ -5581,7 +5575,7 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                         {
                             If (LNotEqual (^^PCI0.PEG0.VGA.SVID, 0xFFFF))
                             {
-                                Store (One, ^^PCI0.GFX0.DSWR)
+                                Store (One, ^^PCI0.IGPU.DSWR)
                                 Notify (^^PCI0.PEG0.VGA, 0x81)
                             }
                         }
@@ -5619,14 +5613,14 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                     Store ("Fn+F7 Pressed", Debug)
                     If (LEqual (DPMD, Zero))
                     {
-                        Notify (^^PCI0.GFX0.DD02, 0x87)
+                        Notify (^^PCI0.IGPU.DD02, 0x87)
                     }
                     Else
                     {
                         If (LEqual (DPMD, 0x04))
                         {
                             Notify (^^PCI0.PEG0.VGA.LCD1, 0x87)
-                            Notify (^^PCI0.GFX0.DD02, 0x87)
+                            Notify (^^PCI0.IGPU.DD02, 0x87)
                         }
                         Else
                         {
@@ -5648,14 +5642,14 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                     Store ("Fn+F8 Pressed", Debug)
                     If (LEqual (DPMD, Zero))
                     {
-                        Notify (^^PCI0.GFX0.DD02, 0x86)
+                        Notify (^^PCI0.IGPU.DD02, 0x86)
                     }
                     Else
                     {
                         If (LEqual (DPMD, 0x04))
                         {
                             Notify (^^PCI0.PEG0.VGA.LCD1, 0x86)
-                            Notify (^^PCI0.GFX0.DD02, 0x86)
+                            Notify (^^PCI0.IGPU.DD02, 0x86)
                         }
                         Else
                         {
@@ -8155,10 +8149,14 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                 Memory32Fixed (ReadWrite,
                     0x00000000,         // Address Base
                     0x00004000,         // Address Length
-                    _Y10)
+                    _Y0F)
                 Memory32Fixed (ReadWrite,
                     0x00000000,         // Address Base
                     0x00008000,         // Address Length
+                    _Y11)
+                Memory32Fixed (ReadWrite,
+                    0x00000000,         // Address Base
+                    0x00001000,         // Address Length
                     _Y12)
                 Memory32Fixed (ReadWrite,
                     0x00000000,         // Address Base
@@ -8166,12 +8164,8 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                     _Y13)
                 Memory32Fixed (ReadWrite,
                     0x00000000,         // Address Base
-                    0x00001000,         // Address Length
-                    _Y14)
-                Memory32Fixed (ReadWrite,
-                    0x00000000,         // Address Base
                     0x00000000,         // Address Length
-                    _Y15)
+                    _Y14)
                 Memory32Fixed (ReadWrite,
                     0xFED20000,         // Address Base
                     0x00020000,         // Address Length
@@ -8191,29 +8185,29 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                 Memory32Fixed (ReadWrite,
                     0x00000000,         // Address Base
                     0x00001000,         // Address Length
-                    _Y11)
+                    _Y10)
             })
             Method (_CRS, 0, Serialized)  // _CRS: Current Resource Settings
             {
-                CreateDWordField (BUF0, \_SB.PCI0.PDRC._Y10._BAS, RBR0)  // _BAS: Base Address
+                CreateDWordField (BUF0, \_SB.PCI0.PDRC._Y0F._BAS, RBR0)  // _BAS: Base Address
                 ShiftLeft (^^LPCB.RCBA, 0x0E, RBR0)
-                CreateDWordField (BUF0, \_SB.PCI0.PDRC._Y11._BAS, TBR0)  // _BAS: Base Address
+                CreateDWordField (BUF0, \_SB.PCI0.PDRC._Y10._BAS, TBR0)  // _BAS: Base Address
                 Store (TBAB, TBR0)
-                CreateDWordField (BUF0, \_SB.PCI0.PDRC._Y11._LEN, TBLN)  // _LEN: Length
+                CreateDWordField (BUF0, \_SB.PCI0.PDRC._Y10._LEN, TBLN)  // _LEN: Length
                 If (LEqual (TBAB, Zero))
                 {
                     Store (Zero, TBLN)
                 }
 
-                CreateDWordField (BUF0, \_SB.PCI0.PDRC._Y12._BAS, MBR0)  // _BAS: Base Address
+                CreateDWordField (BUF0, \_SB.PCI0.PDRC._Y11._BAS, MBR0)  // _BAS: Base Address
                 ShiftLeft (MHBR, 0x0F, MBR0)
-                CreateDWordField (BUF0, \_SB.PCI0.PDRC._Y13._BAS, DBR0)  // _BAS: Base Address
+                CreateDWordField (BUF0, \_SB.PCI0.PDRC._Y12._BAS, DBR0)  // _BAS: Base Address
                 ShiftLeft (DIBR, 0x0C, DBR0)
-                CreateDWordField (BUF0, \_SB.PCI0.PDRC._Y14._BAS, EBR0)  // _BAS: Base Address
+                CreateDWordField (BUF0, \_SB.PCI0.PDRC._Y13._BAS, EBR0)  // _BAS: Base Address
                 ShiftLeft (EPBR, 0x0C, EBR0)
-                CreateDWordField (BUF0, \_SB.PCI0.PDRC._Y15._BAS, XBR0)  // _BAS: Base Address
+                CreateDWordField (BUF0, \_SB.PCI0.PDRC._Y14._BAS, XBR0)  // _BAS: Base Address
                 ShiftLeft (PXBR, 0x1A, XBR0)
-                CreateDWordField (BUF0, \_SB.PCI0.PDRC._Y15._LEN, XSZ0)  // _LEN: Length
+                CreateDWordField (BUF0, \_SB.PCI0.PDRC._Y14._LEN, XSZ0)  // _LEN: Length
                 ShiftRight (0x10000000, PXSZ, XSZ0)
                 Return (BUF0)
             }
@@ -8344,9 +8338,9 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
         Method (_L06, 0, NotSerialized)  // _Lxx: Level-Triggered GPE
         {
-            If (LAnd (\_SB.PCI0.GFX0.GSSE, LNot (GSMI)))
+            If (LAnd (\_SB.PCI0.IGPU.GSSE, LNot (GSMI)))
             {
-                \_SB.PCI0.GFX0.GSCI ()
+                \_SB.PCI0.IGPU.GSCI ()
             }
         }
 
@@ -9353,6 +9347,29 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                     0x0D, 
                     Zero
                 })
+            }
+
+            Method (_DSM, 4, NotSerialized)  // _DSM: Device-Specific Method
+            {
+                Store (Package (0x06)
+                    {
+                        "hda-gfx", 
+                        Buffer (0x0A)
+                        {
+                            "onboard-1"
+                        }, 
+
+                        "layout-id", 
+                        Buffer (0x04)
+                        {
+                             0x03, 0x00, 0x00, 0x00
+                        }, 
+
+                        "PinConfigurations", 
+                        Buffer (Zero) {}
+                    }, Local0)
+                DTGP (Arg0, Arg1, Arg2, Arg3, RefOf (Local0))
+                Return (Local0)
             }
         }
 
@@ -10449,41 +10466,17 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
             Device (PEGP)
             {
                 Name (_ADR, 0x00010000)  // _ADR: Address
-                Device (GFX0)
+                Device (IGPU)
                 {
                     Name (_ADR, Zero)  // _ADR: Address
                     Method (_DSM, 4, NotSerialized)  // _DSM: Device-Specific Method
                     {
-                        Store (Package (0x0C)
+                        Store (Package (0x04)
                             {
-                                "AAPL,slot-name", 
-                                Buffer (0x07)
+                                "AAPL,ig-platform-id", 
+                                Buffer (0x04)
                                 {
-                                    "Slot-1"
-                                }, 
-
-                                "@0,name", 
-                                Buffer (0x0D)
-                                {
-                                    "ATY,Aji"
-                                }, 
-
-                                "@1,name", 
-                                Buffer (0x0D)
-                                {
-                                    "ATY,Aji"
-                                }, 
-
-                                "@2,name", 
-                                Buffer (0x0D)
-                                {
-                                    "ATY,Aji"
-                                }, 
-
-                                "@3,name", 
-                                Buffer (0x0D)
-                                {
-                                    "ATY,Aji"
+                                     0x0A, 0x00, 0x66, 0x01
                                 }, 
 
                                 "hda-gfx", 
@@ -10727,7 +10720,7 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
                     Method (IGBC, 1, NotSerialized)
                     {
-                        ^^^^GFX0.AINT (One, Arg0)
+                        ^^^^IGPU.AINT (One, Arg0)
                         Store (Arg0, BRTL)
                         Divide (Arg0, 0x0A, , Local0)
                         SBTC (Local0)
@@ -10877,7 +10870,7 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
                     Method (IGBC, 1, NotSerialized)
                     {
-                        ^^^^GFX0.AINT (One, Arg0)
+                        ^^^^IGPU.AINT (One, Arg0)
                         Store (Arg0, BRTL)
                         Divide (Arg0, 0x0A, , Local0)
                         SBTC (Local0)
@@ -10968,7 +10961,7 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
             }
         }
 
-        Device (GFX0)
+        Device (IGPU)
         {
             Name (_ADR, 0x00020000)  // _ADR: Address
             Method (PCPC, 0, NotSerialized)
@@ -12398,7 +12391,7 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                     }
                     Else
                     {
-                        Notify (GFX0, Arg1)
+                        Notify (IGPU, Arg1)
                     }
                 }
 
@@ -12408,7 +12401,7 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                 }
                 Else
                 {
-                    Notify (GFX0, 0x80)
+                    Notify (IGPU, 0x80)
                 }
 
                 Return (Zero)
@@ -12619,24 +12612,24 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
             Method (_DSM, 4, NotSerialized)  // _DSM: Device-Specific Method
             {
-                Store (Package (0x0C)
+                Store (Package (0x0A)
                     {
-                        "device-id", 
-                        Buffer (0x04)
-                        {
-                             0x26, 0x01, 0x00, 0x00
-                        }, 
-
-                        "model", 
-                        Buffer (0x18)
-                        {
-                            "Intel HD Graphics 3000"
-                        }, 
-
                         "AAPL,snb-platform-id", 
                         Buffer (0x04)
                         {
                              0x00, 0x00, 0x01, 0x00
+                        }, 
+
+                        "AAPL,aux-power-connected", 
+                        Buffer (0x04)
+                        {
+                             0x01, 0x00, 0x01, 0x00
+                        }, 
+
+                        "AAPL,backlight-control", 
+                        Buffer (0x04)
+                        {
+                             0x01, 0x00, 0x01, 0x00
                         }, 
 
                         "hda-gfx", 
@@ -12645,267 +12638,276 @@ DefinitionBlock ("iASLAXSvQ4.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                             "onboard-2"
                         }, 
 
-                        "@0,override-no-edid", 
-                        Buffer (0x80)
+                        "device-id", 
+                        Buffer (0x04)
                         {
-                            /* 0000 */   0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
-                            /* 0008 */   0x51, 0xF3, 0x91, 0x50, 0x04, 0x00, 0x00, 0x00,
-                            /* 0010 */   0x0E, 0x10, 0x01, 0x03, 0x80, 0x1D, 0x11, 0xFF,
-                            /* 0018 */   0x2F, 0x00, 0x00, 0xA0, 0x57, 0x49, 0x9B, 0x26,
-                            /* 0020 */   0x10, 0x48, 0x4F, 0x00, 0x00, 0x00, 0x01, 0x01,
-                            /* 0028 */   0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-                            /* 0030 */   0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0xC6, 0x1D,
-                            /* 0038 */   0x56, 0x02, 0x51, 0x00, 0x0C, 0x30, 0x22, 0x70,
-                            /* 0040 */   0x12, 0x00, 0x27, 0xA6, 0x10, 0x00, 0x00, 0x18,
-                            /* 0048 */   0xDA, 0x13, 0x56, 0x02, 0x51, 0x00, 0x0C, 0x30,
-                            /* 0050 */   0x22, 0x70, 0x12, 0x00, 0x27, 0xA6, 0x10, 0x00,
-                            /* 0058 */   0x00, 0x18, 0x00, 0x00, 0x00, 0xFC, 0x00, 0x49,
-                            /* 0060 */   0x6E, 0x74, 0x65, 0x72, 0x6E, 0x61, 0x6C, 0x20,
-                            /* 0068 */   0x4C, 0x43, 0x44, 0x0A, 0x00, 0x00, 0x00, 0xFD,
-                            /* 0070 */   0x00, 0x00, 0x3C, 0x00, 0x3D, 0x08, 0x00, 0x00,
-                            /* 0078 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xA7
-                        }, 
-
-                        "AAPL00,override-no-edid", 
-                        Buffer (0x80)
-                        {
-                            /* 0000 */   0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
-                            /* 0008 */   0x51, 0xF3, 0x91, 0x50, 0x04, 0x00, 0x00, 0x00,
-                            /* 0010 */   0x0E, 0x10, 0x01, 0x03, 0x80, 0x1D, 0x11, 0xFF,
-                            /* 0018 */   0x2F, 0x00, 0x00, 0xA0, 0x57, 0x49, 0x9B, 0x26,
-                            /* 0020 */   0x10, 0x48, 0x4F, 0x00, 0x00, 0x00, 0x01, 0x01,
-                            /* 0028 */   0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-                            /* 0030 */   0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0xC6, 0x1D,
-                            /* 0038 */   0x56, 0x02, 0x51, 0x00, 0x0C, 0x30, 0x22, 0x70,
-                            /* 0040 */   0x12, 0x00, 0x27, 0xA6, 0x10, 0x00, 0x00, 0x18,
-                            /* 0048 */   0xDA, 0x13, 0x56, 0x02, 0x51, 0x00, 0x0C, 0x30,
-                            /* 0050 */   0x22, 0x70, 0x12, 0x00, 0x27, 0xA6, 0x10, 0x00,
-                            /* 0058 */   0x00, 0x18, 0x00, 0x00, 0x00, 0xFC, 0x00, 0x49,
-                            /* 0060 */   0x6E, 0x74, 0x65, 0x72, 0x6E, 0x61, 0x6C, 0x20,
-                            /* 0068 */   0x4C, 0x43, 0x44, 0x0A, 0x00, 0x00, 0x00, 0xFD,
-                            /* 0070 */   0x00, 0x00, 0x3C, 0x00, 0x3D, 0x08, 0x00, 0x00,
-                            /* 0078 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xA7
+                             0x26, 0x01, 0x00, 0x00
                         }
                     }, Local0)
                 DTGP (Arg0, Arg1, Arg2, Arg3, RefOf (Local0))
                 Return (Local0)
             }
-        }
 
-        Device (PNLF)
-        {
-            Name (_HID, EisaId ("APP0002"))  // _HID: Hardware ID
-            Name (_CID, "backlight")  // _CID: Compatible ID
-            Name (_UID, 0x0A)  // _UID: Unique ID
-            Name (_STA, 0x0B)  // _STA: Status
-            Method (_BLS, 0, NotSerialized)
+            OperationRegion (RMPC, PCI_Config, 0x10, 0x04)
+            Field (RMPC, AnyAcc, NoLock, Preserve)
             {
-                Return (Package (0x11)
-                {
-                    0x50, 
-                    0x0132, 
-                    0x0161, 
-                    0x0191, 
-                    0x01D1, 
-                    0x0218, 
-                    0x0266, 
-                    0x02B0, 
-                    0x0396, 
-                    0x04C8, 
-                    0x065B, 
-                    0x0873, 
-                    0x0B24, 
-                    0x0EBB, 
-                    0x103A, 
-                    0x11FF, 
-                    0x12FF
-                })
+                BAR1,   32
             }
 
-            Method (_BQL, 1, NotSerialized)
+            Device (PNLF)
             {
-                Divide (Arg0, 0x06, , Local1)
-                Return (DerefOf (Index (_BLS (), Local1)))
-            }
-
-            Method (_BQI, 1, NotSerialized)
-            {
-                Store (Zero, Local0)
-                Store (Zero, Local4)
-                While (LLessEqual (Local0, 0x10))
+                Name (_ADR, Zero)  // _ADR: Address
+                Name (_HID, EisaId ("APP0002"))  // _HID: Hardware ID
+                Name (_CID, "backlight")  // _CID: Compatible ID
+                Name (_UID, 0x0A)  // _UID: Unique ID
+                Name (_STA, 0x0B)  // _STA: Status
+                OperationRegion (BRIT, SystemMemory, And (BAR1, 0xFFFFFFF0), 0x000E1184)
+                Field (BRIT, AnyAcc, Lock, Preserve)
                 {
-                    Multiply (Local0, 0x06, Local2)
-                    Store (_BQL (Local2), Local3)
-                    If (LEqual (Arg0, Local3))
-                    {
-                        Store (Local0, Local4)
-                    }
-
-                    Increment (Local0)
+                    Offset (0x48250), 
+                    LEV2,   32, 
+                    LEVL,   32, 
+                    Offset (0x70040), 
+                    P0BL,   32, 
+                    Offset (0xC8250), 
+                    LEVW,   32, 
+                    LEVX,   32, 
+                    Offset (0xE1180), 
+                    PCHL,   32
                 }
 
-                Return (Local4)
-            }
-
-            Method (_BCL, 0, NotSerialized)  // _BCL: Brightness Control Levels
-            {
-                Return (Package (0x13)
+                Name (LMAX, Zero)
+                Name (KMAX, 0x0710)
+                Name (KPCH, Ones)
+                Method (_INI, 0, NotSerialized)  // _INI: Initialize
                 {
-                    0x64, 
-                    0x32, 
-                    Zero, 
-                    0x06, 
-                    0x0C, 
-                    0x12, 
-                    0x18, 
-                    0x1E, 
-                    0x24, 
-                    0x2A, 
-                    0x30, 
-                    0x36, 
-                    0x3C, 
-                    0x42, 
-                    0x48, 
-                    0x4E, 
-                    0x54, 
-                    0x5A, 
-                    0x64
-                })
-            }
-
-            Method (_BCM, 1, NotSerialized)  // _BCM: Brightness Control Method
-            {
-                Store (0x80000000, LEV2)
-                If (LGreaterEqual (Arg0, 0x64))
-                {
-                    Store (0x12FF, LEVL)
-                }
-                Else
-                {
-                    If (LGreaterEqual (Arg0, 0x5A))
+                    If (LNot (KPCH))
                     {
-                        Store (0x11FF, LEVL)
+                        Store (PCHL, KPCH)
                     }
-                    Else
+
+                    If (LNot (LMAX))
                     {
-                        If (LGreaterEqual (Arg0, 0x54))
+                        Store (ShiftRight (LEVX, 0x10), LMAX)
+                    }
+
+                    If (LNot (LMAX))
+                    {
+                        Store (KMAX, LMAX)
+                    }
+
+                    Store (ShiftLeft (LMAX, 0x10), KLVX)
+                    If (LNotEqual (LMAX, KMAX))
+                    {
+                        Store (Zero, Local0)
+                        While (LLess (Local0, SizeOf (_BCL)))
                         {
-                            Store (0x103A, LEVL)
+                            Store (DerefOf (Index (_BCL, Local0)), Local1)
+                            Divide (Multiply (Local1, LMAX), KMAX, , Local1)
+                            Store (Local1, Index (_BCL, Local0))
+                            Increment (Local0)
+                        }
+
+                        Divide (Multiply (XRGL, LMAX), KMAX, , XRGL)
+                        Divide (Multiply (XRGH, LMAX), KMAX, , XRGH)
+                    }
+
+                    Store (ShiftRight (LEVX, 0x10), Local1)
+                    If (LNotEqual (Local1, LMAX))
+                    {
+                        Store (LEVL, Local0)
+                        If (LOr (LNot (Local0), LNot (Local1)))
+                        {
+                            Store (LMAX, Local0)
+                            Store (LMAX, Local1)
+                        }
+
+                        Divide (Multiply (Local0, LMAX), Local1, , Local0)
+                        If (LGreater (LEVL, LMAX))
+                        {
+                            Store (KLVX, LEVX)
+                            Store (Local0, LEVL)
                         }
                         Else
                         {
-                            If (LGreaterEqual (Arg0, 0x4E))
-                            {
-                                Store (0x0EBB, LEVL)
-                            }
-                            Else
-                            {
-                                If (LGreaterEqual (Arg0, 0x48))
-                                {
-                                    Store (0x0B24, LEVL)
-                                }
-                                Else
-                                {
-                                    If (LGreaterEqual (Arg0, 0x42))
-                                    {
-                                        Store (0x0873, LEVL)
-                                    }
-                                    Else
-                                    {
-                                        If (LGreaterEqual (Arg0, 0x3C))
-                                        {
-                                            Store (0x065B, LEVL)
-                                        }
-                                        Else
-                                        {
-                                            If (LGreaterEqual (Arg0, 0x36))
-                                            {
-                                                Store (0x04C8, LEVL)
-                                            }
-                                            Else
-                                            {
-                                                If (LGreaterEqual (Arg0, 0x30))
-                                                {
-                                                    Store (0x0396, LEVL)
-                                                }
-                                                Else
-                                                {
-                                                    If (LGreaterEqual (Arg0, 0x2A))
-                                                    {
-                                                        Store (0x02B0, LEVL)
-                                                    }
-                                                    Else
-                                                    {
-                                                        If (LGreaterEqual (Arg0, 0x24))
-                                                        {
-                                                            Store (0x0266, LEVL)
-                                                        }
-                                                        Else
-                                                        {
-                                                            If (LGreaterEqual (Arg0, 0x1E))
-                                                            {
-                                                                Store (0x0218, LEVL)
-                                                            }
-                                                            Else
-                                                            {
-                                                                If (LGreaterEqual (Arg0, 0x18))
-                                                                {
-                                                                    Store (0x01B1, LEVL)
-                                                                }
-                                                                Else
-                                                                {
-                                                                    If (LGreaterEqual (Arg0, 0x12))
-                                                                    {
-                                                                        Store (0x0161, LEVL)
-                                                                    }
-                                                                    Else
-                                                                    {
-                                                                        If (LGreaterEqual (Arg0, 0x0C))
-                                                                        {
-                                                                            Store (0x50, LEVL)
-                                                                        }
-                                                                        Else
-                                                                        {
-                                                                            If (LGreaterEqual (Arg0, 0x06))
-                                                                            {
-                                                                                Store (0x25, LEVL)
-                                                                            }
-                                                                            Else
-                                                                            {
-                                                                                If (LGreaterEqual (Arg0, Zero))
-                                                                                {
-                                                                                    Store (0x12, LEVL)
-                                                                                }
-                                                                                Else
-                                                                                {
-                                                                                    Store (0x11FF, LEVL)
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            Store (Local0, LEVL)
+                            Store (KLVX, LEVX)
                         }
                     }
                 }
-            }
 
-            Method (_BQC, 0, NotSerialized)  // _BQC: Brightness Query Current
-            {
-                Return (^^GFX0.DD02._BQC ())
-            }
+                Method (_BCM, 1, NotSerialized)  // _BCM: Brightness Control Method
+                {
+                    If (LAnd (LNotEqual (KPCH, Ones), LNotEqual (PCHL, KPCH)))
+                    {
+                        Store (KPCH, PCHL)
+                    }
 
-            Method (_DOS, 1, NotSerialized)  // _DOS: Disable Output Switching
-            {
-                ^^GFX0._DOS (Arg0)
+                    If (LNotEqual (LEVW, 0x80000000))
+                    {
+                        Store (0x80000000, LEVW)
+                    }
+
+                    If (LNotEqual (LEVX, KLVX))
+                    {
+                        Store (KLVX, LEVX)
+                    }
+
+                    Store (Match (_BCL, MGE, Arg0, MTR, Zero, 0x02), Local0)
+                    If (LEqual (Local0, Ones))
+                    {
+                        Subtract (SizeOf (_BCL), One, Local0)
+                    }
+
+                    If (LNotEqual (LEV2, 0x80000000))
+                    {
+                        Store (0x80000000, LEV2)
+                    }
+
+                    Store (DerefOf (Index (_BCL, Local0)), LEVL)
+                }
+
+                Method (_BQC, 0, NotSerialized)  // _BQC: Brightness Query Current
+                {
+                    Store (Match (_BCL, MGE, LEVL, MTR, Zero, 0x02), Local0)
+                    If (LEqual (Local0, Ones))
+                    {
+                        Subtract (SizeOf (_BCL), One, Local0)
+                    }
+
+                    Return (DerefOf (Index (_BCL, Local0)))
+                }
+
+                Method (_DOS, 1, NotSerialized)  // _DOS: Disable Output Switching
+                {
+                    ^^_DOS (Arg0)
+                }
+
+                Method (XBCM, 1, NotSerialized)
+                {
+                    If (LAnd (LNotEqual (KPCH, Ones), LNotEqual (PCHL, KPCH)))
+                    {
+                        Store (KPCH, PCHL)
+                    }
+
+                    If (LNotEqual (LEVW, 0x80000000))
+                    {
+                        Store (0x80000000, LEVW)
+                    }
+
+                    If (LNotEqual (LEVX, KLVX))
+                    {
+                        Store (KLVX, LEVX)
+                    }
+
+                    If (LGreater (Arg0, XRGH))
+                    {
+                        Store (XRGH, Arg0)
+                    }
+
+                    If (LAnd (Arg0, LLess (Arg0, XRGL)))
+                    {
+                        Store (XRGL, Arg0)
+                    }
+
+                    If (LNotEqual (LEV2, 0x80000000))
+                    {
+                        Store (0x80000000, LEV2)
+                    }
+
+                    Store (Arg0, LEVL)
+                }
+
+                Method (XBQC, 0, NotSerialized)
+                {
+                    Store (LEVL, Local0)
+                    If (LGreater (Local0, XRGH))
+                    {
+                        Store (XRGH, Local0)
+                    }
+
+                    If (LAnd (Local0, LLess (Local0, XRGL)))
+                    {
+                        Store (XRGL, Local0)
+                    }
+
+                    Return (Local0)
+                }
+
+                Name (XOPT, 0x06)
+                Name (XRGL, 0x28)
+                Name (XRGH, 0x0710)
+                Name (KLVX, 0x07100000)
+                Name (_BCL, Package (0x43)  // _BCL: Brightness Control Levels
+                {
+                    0x0710, 
+                    0x01DF, 
+                    One, 
+                    0x15, 
+                    0x37, 
+                    0x39, 
+                    0x3B, 
+                    0x3E, 
+                    0x42, 
+                    0x47, 
+                    0x4D, 
+                    0x53, 
+                    0x5B, 
+                    0x63, 
+                    0x6C, 
+                    0x77, 
+                    0x82, 
+                    0x8E, 
+                    0x9A, 
+                    0xA8, 
+                    0xB7, 
+                    0xC6, 
+                    0xD6, 
+                    0xE8, 
+                    0xFA, 
+                    0x010D, 
+                    0x0121, 
+                    0x0135, 
+                    0x014B, 
+                    0x0162, 
+                    0x0179, 
+                    0x0191, 
+                    0x01AA, 
+                    0x01C5, 
+                    0x01DF, 
+                    0x01FB, 
+                    0x0218, 
+                    0x0236, 
+                    0x0254, 
+                    0x0273, 
+                    0x0294, 
+                    0x02B5, 
+                    0x02D7, 
+                    0x02FA, 
+                    0x031D, 
+                    0x0342, 
+                    0x0368, 
+                    0x038E, 
+                    0x03B5, 
+                    0x03DE, 
+                    0x0407, 
+                    0x0431, 
+                    0x045B, 
+                    0x0487, 
+                    0x04B4, 
+                    0x04E1, 
+                    0x0510, 
+                    0x053F, 
+                    0x056F, 
+                    0x05A0, 
+                    0x05D2, 
+                    0x0605, 
+                    0x0638, 
+                    0x066D, 
+                    0x06A2, 
+                    0x06D9, 
+                    0x0710
+                })
             }
         }
     }
