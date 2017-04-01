@@ -3,20 +3,20 @@
  * AML Disassembler version 20131218-64 [Jan  8 2014]
  * Copyright (c) 2000 - 2013 Intel Corporation
  * 
- * Disassembly of iASLzp0gPl.aml, Sat Apr  1 09:52:37 2017
+ * Disassembly of iASLtabriH.aml, Sat Apr  1 09:54:02 2017
  *
  * Original Table Header:
  *     Signature        "DSDT"
- *     Length           0x0000C1F6 (49654)
+ *     Length           0x0000CC93 (52371)
  *     Revision         0x01 **** 32-bit table (V1), no 64-bit math support
- *     Checksum         0x9B
+ *     Checksum         0x3F
  *     OEM ID           "HP    "
  *     OEM Table ID     "1670    "
  *     OEM Revision     0x00000000 (0)
  *     Compiler ID      "INTL"
  *     Compiler Version 0x20100331 (537920305)
  */
-DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
+DefinitionBlock ("iASLtabriH.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 {
     /*
      * iASL Warning: There were 6 external control methods found during
@@ -395,6 +395,7 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
         QPFL,   8, 
         QPSL,   8, 
         CHID,   8, 
+        OSKU,   8, 
         OSSK,   8, 
         WPFL,   8, 
         DBSW,   8, 
@@ -481,6 +482,35 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
         HSMS,   8
     }
 
+    OperationRegion (BRIT, SystemMemory, 0xC0048254, 0x04)
+    Field (BRIT, AnyAcc, Lock, Preserve)
+    {
+        LEVL,   32
+    }
+
+    OperationRegion (BRI2, SystemMemory, 0xC0048250, 0x04)
+    Field (BRI2, AnyAcc, Lock, Preserve)
+    {
+        LEV2,   32
+    }
+
+    OperationRegion (BRI3, SystemMemory, 0xC00C8250, 0x04)
+    Field (BRI3, AnyAcc, Lock, Preserve)
+    {
+        LEVW,   32
+    }
+
+    OperationRegion (BRI4, SystemMemory, 0xC00C8254, 0x04)
+    Field (BRI4, AnyAcc, Lock, Preserve)
+    {
+        LEVX,   32
+    }
+
+    Name (EPLD, Buffer (0x10)
+    {
+        /* 0000 */   0x81, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        /* 0008 */   0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    })
     Scope (_SB)
     {
         Name (PRSA, ResourceTemplate ()
@@ -522,6 +552,12 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                 {
                     Return (0x0F)
                 }
+
+                Name (_PRW, Package (0x02)  // _PRW: Power Resources for Wake
+                {
+                    0x18, 
+                    0x03
+                })
             }
 
             Device (LID0)
@@ -2879,42 +2915,16 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
                     Method (_Q10, 0, NotSerialized)  // _Qxx: EC Query
                     {
-                        If (LEqual (DPMD, Zero))
-                        {
-                            Notify (^^^GFX0.DD02, 0x87)
-                        }
-                        Else
-                        {
-                            If (LEqual (DPMD, 0x04))
-                            {
-                                Notify (^^^PEG0.VGA.LCD1, 0x87)
-                                Notify (^^^GFX0.DD02, 0x87)
-                            }
-                            Else
-                            {
-                                Notify (^^^PEG0.VGA.LCD0, 0x87)
-                            }
-                        }
+                        Store (0x03, ^^^^WMID.WEI0)
+                        Store (Zero, ^^^^WMID.WEI1)
+                        Notify (WMID, 0x80)
                     }
 
                     Method (_Q11, 0, NotSerialized)  // _Qxx: EC Query
                     {
-                        If (LEqual (DPMD, Zero))
-                        {
-                            Notify (^^^GFX0.DD02, 0x86)
-                        }
-                        Else
-                        {
-                            If (LEqual (DPMD, 0x04))
-                            {
-                                Notify (^^^PEG0.VGA.LCD1, 0x86)
-                                Notify (^^^GFX0.DD02, 0x86)
-                            }
-                            Else
-                            {
-                                Notify (^^^PEG0.VGA.LCD0, 0x86)
-                            }
-                        }
+                        Store (0x02, ^^^^WMID.WEI0)
+                        Store (Zero, ^^^^WMID.WEI1)
+                        Notify (WMID, 0x80)
                     }
 
                     Method (_Q15, 0, NotSerialized)  // _Qxx: EC Query
@@ -3527,10 +3537,18 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                     Name (_UID, Zero)  // _UID: Unique ID
                     Name (BUF0, ResourceTemplate ()
                     {
+                        IRQNoFlags ()
+                            {0}
+                        IRQNoFlags (_Y0F)
+                            {8}
+                        IRQNoFlags ()
+                            {11}
+                        IRQNoFlags ()
+                            {15}
                         Memory32Fixed (ReadWrite,
                             0xFED00000,         // Address Base
                             0x00000400,         // Address Length
-                            _Y0F)
+                            )
                     })
                     Method (_STA, 0, NotSerialized)  // _STA: Status
                     {
@@ -3556,7 +3574,7 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                     {
                         If (HPAE)
                         {
-                            CreateDWordField (BUF0, \_SB.PCI0.LPCB.HPET._Y0F._BAS, HPT0)  // _BAS: Base Address
+                            CreateDWordField (BUF0, \_SB.PCI0.LPCB.HPET._Y0F._INT, HPT0)  // _INT: Interrupts
                             If (LEqual (HPAS, One))
                             {
                                 Store (0xFED01000, HPT0)
@@ -3684,8 +3702,6 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                             0x01,               // Alignment
                             0x02,               // Length
                             )
-                        IRQNoFlags ()
-                            {2}
                     })
                 }
 
@@ -3849,10 +3865,8 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                             0x0070,             // Range Minimum
                             0x0070,             // Range Maximum
                             0x01,               // Alignment
-                            0x08,               // Length
+                            0x02,               // Length
                             )
-                        IRQNoFlags ()
-                            {8}
                     })
                     OperationRegion (CMS0, SystemCMOS, Zero, 0x40)
                     Field (CMS0, ByteAcc, NoLock, Preserve)
@@ -3885,8 +3899,6 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                             0x10,               // Alignment
                             0x04,               // Length
                             )
-                        IRQNoFlags ()
-                            {0}
                     })
                 }
 
@@ -3950,6 +3962,20 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                     Method (_PSW, 1, NotSerialized)  // _PSW: Power State Wake
                     {
                         Store (Arg0, KBWK)
+                    }
+
+                    Method (_DSM, 4, NotSerialized)  // _DSM: Device-Specific Method
+                    {
+                        Store (Package (0x02)
+                            {
+                                "AAPL,has-embedded-fn-keys", 
+                                Buffer (0x04)
+                                {
+                                     0x01, 0x00, 0x00, 0x00
+                                }
+                            }, Local0)
+                        DTGP (Arg0, Arg1, Arg2, Arg3, RefOf (Local0))
+                        Return (Local0)
                     }
                 }
 
@@ -4704,7 +4730,7 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
             }
 
             Name (_HID, "PNP0C14")  // _HID: Hardware ID
-            Name (_UID, Zero)  // _UID: Unique ID
+            Name (_UID, "HPWMI")  // _UID: Unique ID
             Name (WMIF, Zero)
             Name (WEI0, Zero)
             Name (WED0, Zero)
@@ -6670,6 +6696,11 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                 Notify (WMID, 0x80)
             }
 
+            Method (_STA, 1, NotSerialized)  // _STA: Status
+            {
+                Return (0x0F)
+            }
+
             Method (_WED, 1, NotSerialized)  // _Wxx: Wake Event
             {
                 Store (Buffer (0x08)
@@ -7147,6 +7178,14 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
     Method (_WAK, 1, Serialized)  // _WAK: Wake
     {
+        If (LOr (LLess (Arg0, One), LGreater (Arg0, 0x05)))
+        {
+            Store (0x03, Arg0)
+        }
+
+        PINI ()
+        Store (0x80000000, LEVW)
+        Store (0x13121312, LEVX)
         Store (Zero, P80D)
         If (NEXP)
         {
@@ -7408,6 +7447,7 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
     {
         Method (_INI, 0, NotSerialized)  // _INI: Initialize
         {
+            PINI ()
             Store (0x07D0, OSYS)
             If (CondRefOf (\_OSI, Local0))
             {
@@ -7436,7 +7476,7 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                     Store (0x07D3, OSYS)
                 }
 
-                If (_OSI ("Windows 2006"))
+                If (LOr (_OSI ("Darwin"), _OSI ("Windows 2006")))
                 {
                     Store (0x07D6, OSYS)
                 }
@@ -8024,7 +8064,7 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                 \_SB.PCI0.IEIT.EITV ()
             }
 
-            If (CondRefOf (\TNOT))
+            If (CondRefOf (TNOT))
             {
                 TNOT ()
             }
@@ -8617,8 +8657,36 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
             Name (_PRW, Package (0x02)  // _PRW: Power Resources for Wake
             {
                 0x0D, 
-                0x03
+                One
             })
+            Method (_DSM, 4, NotSerialized)  // _DSM: Device-Specific Method
+            {
+                Store (Package (0x04)
+                    {
+                        "AAPL,clock-id", 
+                        Buffer (One)
+                        {
+                             0x01
+                        }, 
+
+                        "device_type", 
+                        Buffer (0x05)
+                        {
+                            "EHCI"
+                        }
+                    }, Local0)
+                DTGP (Arg0, Arg1, Arg2, Arg3, RefOf (Local0))
+                Return (Local0)
+            }
+
+            OperationRegion (EOWN, PCI_Config, 0x68, 0x04)
+            Field (EOWN, ByteAcc, NoLock, Preserve)
+            {
+                Offset (0x02), 
+                HCBO,   1, 
+                Offset (0x03), 
+                HCOO,   1
+            }
         }
 
         Device (EHC2)
@@ -8958,8 +9026,36 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
             Name (_PRW, Package (0x02)  // _PRW: Power Resources for Wake
             {
                 0x0D, 
-                0x03
+                One
             })
+            Method (_DSM, 4, NotSerialized)  // _DSM: Device-Specific Method
+            {
+                Store (Package (0x04)
+                    {
+                        "AAPL,clock-id", 
+                        Buffer (One)
+                        {
+                             0x02
+                        }, 
+
+                        "device_type", 
+                        Buffer (0x05)
+                        {
+                            "EHCI"
+                        }
+                    }, Local0)
+                DTGP (Arg0, Arg1, Arg2, Arg3, RefOf (Local0))
+                Return (Local0)
+            }
+
+            OperationRegion (EOWN, PCI_Config, 0x68, 0x04)
+            Field (EOWN, ByteAcc, NoLock, Preserve)
+            {
+                Offset (0x02), 
+                HCBO,   1, 
+                Offset (0x03), 
+                HCOO,   1
+            }
         }
 
         Device (HDEF)
@@ -9041,6 +9137,72 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                             Store (Zero, Local0)
                         }
                     }
+                }
+            }
+
+            Device (ARPT)
+            {
+                Name (_ADR, Zero)  // _ADR: Address
+                Method (_PRW, 0, Serialized)  // _PRW: Power Resources for Wake
+                {
+                    Return (^^_PRW ())
+                }
+
+                Method (_PLD, 0, Serialized)  // _PLD: Physical Location of Device
+                {
+                    Return (EPLD)
+                }
+
+                Method (_DSM, 4, NotSerialized)  // _DSM: Device-Specific Method
+                {
+                    If (LEqual (Arg2, Zero))
+                    {
+                        Return (Buffer (One)
+                        {
+                             0x03
+                        })
+                    }
+
+                    Return (Package (0x0E)
+                    {
+                        "device-id", 
+                        Unicode ("0"), 
+                        "name", 
+                        Buffer (0x0B)
+                        {
+                            "pci168c,30"
+                        }, 
+
+                        "model", 
+                        Buffer (0x33)
+                        {
+                            "Atheros 9x8x 802.11 b/g/n Wireless Network Adapter"
+                        }, 
+
+                        "AAPL,slot-name", 
+                        Buffer (0x08)
+                        {
+                            "AirPort"
+                        }, 
+
+                        "device_type", 
+                        Buffer (0x08)
+                        {
+                            "AirPort"
+                        }, 
+
+                        "subsystem-id", 
+                        Buffer (0x04)
+                        {
+                             0x8F, 0x00, 0x00, 0x00
+                        }, 
+
+                        "subsystem-vendor-id", 
+                        Buffer (0x04)
+                        {
+                             0x6B, 0x10, 0x00, 0x00
+                        }
+                    })
                 }
             }
 
@@ -10484,14 +10646,7 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
             Method (PAPR, 0, NotSerialized)
             {
-                If (LEqual (^^LPCB.EC0.ECOK, One))
-                {
-                    Return (Zero)
-                }
-                Else
-                {
-                    Return (Zero)
-                }
+                Return (Zero)
             }
 
             Method (_DOS, 1, NotSerialized)  // _DOS: Disable Output Switching
@@ -10728,7 +10883,8 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
                 Method (_DGS, 0, NotSerialized)  // _DGS: Display Graphics State
                 {
-                    If (LAnd (LEqual (SGMD, One), CondRefOf (SNXD)))
+                    If (LAnd (LEqual (And (SGMD, 0x7F), One), CondRefOf (SNXD
+                        )))
                     {
                         Return (NXD1)
                     }
@@ -10747,6 +10903,7 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
             Device (DD02)
             {
+                Name (_HID, EisaId ("LCD1234"))  // _HID: Hardware ID
                 Method (_ADR, 0, Serialized)  // _ADR: Address
                 {
                     If (LEqual (DID2, Zero))
@@ -10771,7 +10928,8 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
                 Method (_DGS, 0, NotSerialized)  // _DGS: Display Graphics State
                 {
-                    If (LAnd (LEqual (SGMD, One), CondRefOf (SNXD)))
+                    If (LAnd (LEqual (And (SGMD, 0x7F), One), CondRefOf (SNXD
+                        )))
                     {
                         Return (NXD2)
                     }
@@ -10803,7 +10961,7 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                     0x5A, 
                     0x64
                 })
-                Name (QWBR, Package (0x0D)
+                Name (SUBR, Package (0x0D)
                 {
                     0x64, 
                     0x32, 
@@ -10819,67 +10977,147 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                     0x5A, 
                     0x64
                 })
+                Name (W8BR, Package (0x67)
+                {
+                    0x64, 
+                    0x32, 
+                    Zero, 
+                    Zero, 
+                    Zero, 
+                    Zero, 
+                    Zero, 
+                    Zero, 
+                    Zero, 
+                    Zero, 
+                    Zero, 
+                    Zero, 
+                    0x0A, 
+                    0x0B, 
+                    0x0C, 
+                    0x0D, 
+                    0x0E, 
+                    0x0F, 
+                    0x10, 
+                    0x11, 
+                    0x12, 
+                    0x13, 
+                    0x14, 
+                    0x15, 
+                    0x16, 
+                    0x17, 
+                    0x18, 
+                    0x19, 
+                    0x1A, 
+                    0x1B, 
+                    0x1C, 
+                    0x1D, 
+                    0x1E, 
+                    0x1F, 
+                    0x20, 
+                    0x21, 
+                    0x22, 
+                    0x23, 
+                    0x24, 
+                    0x25, 
+                    0x26, 
+                    0x27, 
+                    0x28, 
+                    0x29, 
+                    0x2A, 
+                    0x2B, 
+                    0x2C, 
+                    0x2D, 
+                    0x2E, 
+                    0x2F, 
+                    0x30, 
+                    0x31, 
+                    0x32, 
+                    0x33, 
+                    0x34, 
+                    0x35, 
+                    0x36, 
+                    0x37, 
+                    0x38, 
+                    0x39, 
+                    0x3A, 
+                    0x3B, 
+                    0x3C, 
+                    0x3D, 
+                    0x3E, 
+                    0x3F, 
+                    0x40, 
+                    0x41, 
+                    0x42, 
+                    0x43, 
+                    0x44, 
+                    0x45, 
+                    0x46, 
+                    0x47, 
+                    0x48, 
+                    0x49, 
+                    0x4A, 
+                    0x4B, 
+                    0x4C, 
+                    0x4D, 
+                    0x4E, 
+                    0x4F, 
+                    0x50, 
+                    0x51, 
+                    0x52, 
+                    0x53, 
+                    0x54, 
+                    0x55, 
+                    0x56, 
+                    0x57, 
+                    0x58, 
+                    0x59, 
+                    0x5A, 
+                    0x64, 
+                    0x64, 
+                    0x64, 
+                    0x64, 
+                    0x64, 
+                    0x64, 
+                    0x64, 
+                    0x64, 
+                    0x64, 
+                    0x64
+                })
                 Method (_BCL, 0, NotSerialized)  // _BCL: Brightness Control Levels
                 {
-                    If (LEqual (^^^LPCB.EC0.ECOK, One))
+                    If (LEqual (OSKU, Zero))
                     {
-                        If (LEqual (^^^LPCB.EC0.QWHF, One))
-                        {
-                            Return (QWBR)
-                        }
-                        Else
-                        {
-                            If (LEqual (OSYS, 0x03E9))
-                            {
-                                Return (QWBR)
-                            }
-                            Else
-                            {
-                                Return (OSBR)
-                            }
-                        }
+                        Return (SUBR)
                     }
                     Else
                     {
-                        Return (OSBR)
+                        If (LLess (OSYS, 0x07DC))
+                        {
+                            Return (OSBR)
+                        }
+                        Else
+                        {
+                            Return (W8BR)
+                        }
                     }
                 }
 
                 Method (_BQC, 0, NotSerialized)  // _BQC: Brightness Query Current
                 {
-                    If (LOr (LEqual (DPMD, Zero), LEqual (DPMD, 0x04)))
-                    {
-                        Return (IGBQ ())
-                    }
-                    Else
-                    {
-                        TRAP (TRTI, 0x02)
-                        Return (BRTL)
-                    }
+                    Return (IGBQ ())
                 }
 
                 Method (_BCM, 1, NotSerialized)  // _BCM: Brightness Control Method
                 {
-                    If (LOr (LEqual (DPMD, Zero), LEqual (DPMD, 0x04)))
-                    {
-                        If (LAnd (LGreaterEqual (Arg0, Zero), LLessEqual (Arg0, 0x64)))
-                        {
-                            IGBC (Arg0)
-                        }
-                    }
-                    Else
-                    {
-                        Store (Arg0, BRTL)
-                        TRAP (TRTI, 0x03)
-                    }
-
+                    IGBC (Arg0)
                     Stall (0xFF)
                     Stall (0xFF)
                 }
 
                 Method (IGBQ, 0, NotSerialized)
                 {
-                    Return (BRTL)
+                    And (CBLV, 0xFF, Local0)
+                    Return (Local0)
                 }
 
                 Method (IGBC, 1, NotSerialized)
@@ -10892,13 +11130,16 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
                 Method (SBTC, 1, NotSerialized)
                 {
-                    If (^^^LPCB.EC0.SW2S)
+                    If (LEqual (^^^LPCB.EC0.ECOK, One))
                     {
-                        CMSW (0x43, Arg0)
-                    }
-                    Else
-                    {
-                        CMSW (0x44, Arg0)
+                        If (^^^LPCB.EC0.SW2S)
+                        {
+                            CMSW (0x43, Arg0)
+                        }
+                        Else
+                        {
+                            CMSW (0x44, Arg0)
+                        }
                     }
                 }
             }
@@ -10931,7 +11172,8 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
                 Method (_DGS, 0, NotSerialized)  // _DGS: Display Graphics State
                 {
-                    If (LAnd (LEqual (SGMD, One), CondRefOf (SNXD)))
+                    If (LAnd (LEqual (And (SGMD, 0x7F), One), CondRefOf (SNXD
+                        )))
                     {
                         Return (NXD3)
                     }
@@ -10976,7 +11218,8 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
                 Method (_DGS, 0, NotSerialized)  // _DGS: Display Graphics State
                 {
-                    If (LAnd (LEqual (SGMD, One), CondRefOf (SNXD)))
+                    If (LAnd (LEqual (And (SGMD, 0x7F), One), CondRefOf (SNXD
+                        )))
                     {
                         Return (NXD4)
                     }
@@ -11021,7 +11264,8 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
                 Method (_DGS, 0, NotSerialized)  // _DGS: Display Graphics State
                 {
-                    If (LAnd (LEqual (SGMD, One), CondRefOf (SNXD)))
+                    If (LAnd (LEqual (And (SGMD, 0x7F), One), CondRefOf (SNXD
+                        )))
                     {
                         Return (NXD5)
                     }
@@ -11066,7 +11310,8 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
                 Method (_DGS, 0, NotSerialized)  // _DGS: Display Graphics State
                 {
-                    If (LAnd (LEqual (SGMD, One), CondRefOf (SNXD)))
+                    If (LAnd (LEqual (And (SGMD, 0x7F), One), CondRefOf (SNXD
+                        )))
                     {
                         Return (NXD6)
                     }
@@ -11111,7 +11356,8 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
                 Method (_DGS, 0, NotSerialized)  // _DGS: Display Graphics State
                 {
-                    If (LAnd (LEqual (SGMD, One), CondRefOf (SNXD)))
+                    If (LAnd (LEqual (And (SGMD, 0x7F), One), CondRefOf (SNXD
+                        )))
                     {
                         Return (NXD7)
                     }
@@ -11156,7 +11402,8 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
                 Method (_DGS, 0, NotSerialized)  // _DGS: Display Graphics State
                 {
-                    If (LAnd (LEqual (SGMD, One), CondRefOf (SNXD)))
+                    If (LAnd (LEqual (And (SGMD, 0x7F), One), CondRefOf (SNXD
+                        )))
                     {
                         Return (NXD8)
                     }
@@ -11442,6 +11689,10 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                 PFMB,   32, 
                 CCDV,   32, 
                 PCFT,   32, 
+                SROT,   32, 
+                IUER,   32, 
+                FDSP,   64, 
+                FDSS,   32, 
                 Offset (0x400), 
                 GVD1,   49152, 
                 PHED,   32, 
@@ -11867,7 +12118,7 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                 Return (LNot (ARDY))
             }
 
-            Method (AINT, 2, NotSerialized)
+            Method (AINT, 2, Serialized)
             {
                 If (LNot (And (TCHE, ShiftLeft (One, Arg0))))
                 {
@@ -11990,7 +12241,7 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
             {
                 Name (_HID, EisaId ("PNP0C01"))  // _HID: Hardware ID
                 Name (_UID, 0x02)  // _UID: Unique ID
-                Name (CRS, ResourceTemplate ()
+                Name (CRS1, ResourceTemplate ()
                 {
                     Memory32Fixed (ReadWrite,
                         0x20000000,         // Address Base
@@ -12001,13 +12252,328 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
                         0x00200000,         // Address Length
                         )
                 })
-                Method (_CRS, 0, NotSerialized)  // _CRS: Current Resource Settings
+                Name (CRS2, ResourceTemplate ()
+                {
+                    Memory32Fixed (ReadWrite,
+                        0x20000000,         // Address Base
+                        0x00200000,         // Address Length
+                        )
+                    Memory32Fixed (ReadWrite,
+                        0x40004000,         // Address Base
+                        0x00001000,         // Address Length
+                        )
+                })
+                Method (_STA, 0, NotSerialized)  // _STA: Status
                 {
                     If (IGDS)
                     {
-                        Return (CRS)
+                        Return (0x0F)
+                    }
+
+                    Return (Zero)
+                }
+
+                Method (_CRS, 0, NotSerialized)  // _CRS: Current Resource Settings
+                {
+                    If (LOr (LEqual (And (PNHM, 0x0FFF0FF0), 0x000206A0), LEqual (And (
+                        PNHM, 0x0FFF0FFF), 0x000306A0)))
+                    {
+                        Return (CRS1)
+                    }
+
+                    Return (CRS2)
+                }
+            }
+
+            Method (_DSM, 4, NotSerialized)  // _DSM: Device-Specific Method
+            {
+                Store (Package (0x0C)
+                    {
+                        "device-id", 
+                        Buffer (0x04)
+                        {
+                             0x26, 0x01, 0x00, 0x00
+                        }, 
+
+                        "model", 
+                        Buffer (0x18)
+                        {
+                            "Intel HD Graphics 3000"
+                        }, 
+
+                        "AAPL,snb-platform-id", 
+                        Buffer (0x04)
+                        {
+                             0x00, 0x00, 0x01, 0x00
+                        }, 
+
+                        "hda-gfx", 
+                        Buffer (0x0A)
+                        {
+                            "onboard-2"
+                        }, 
+
+                        "@0,override-no-edid", 
+                        Buffer (0x80)
+                        {
+                            /* 0000 */   0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
+                            /* 0008 */   0x51, 0xF3, 0x91, 0x50, 0x04, 0x00, 0x00, 0x00,
+                            /* 0010 */   0x0E, 0x10, 0x01, 0x03, 0x80, 0x1D, 0x11, 0xFF,
+                            /* 0018 */   0x2F, 0x00, 0x00, 0xA0, 0x57, 0x49, 0x9B, 0x26,
+                            /* 0020 */   0x10, 0x48, 0x4F, 0x00, 0x00, 0x00, 0x01, 0x01,
+                            /* 0028 */   0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                            /* 0030 */   0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0xC6, 0x1D,
+                            /* 0038 */   0x56, 0x02, 0x51, 0x00, 0x0C, 0x30, 0x22, 0x70,
+                            /* 0040 */   0x12, 0x00, 0x27, 0xA6, 0x10, 0x00, 0x00, 0x18,
+                            /* 0048 */   0xDA, 0x13, 0x56, 0x02, 0x51, 0x00, 0x0C, 0x30,
+                            /* 0050 */   0x22, 0x70, 0x12, 0x00, 0x27, 0xA6, 0x10, 0x00,
+                            /* 0058 */   0x00, 0x18, 0x00, 0x00, 0x00, 0xFC, 0x00, 0x49,
+                            /* 0060 */   0x6E, 0x74, 0x65, 0x72, 0x6E, 0x61, 0x6C, 0x20,
+                            /* 0068 */   0x4C, 0x43, 0x44, 0x0A, 0x00, 0x00, 0x00, 0xFD,
+                            /* 0070 */   0x00, 0x00, 0x3C, 0x00, 0x3D, 0x08, 0x00, 0x00,
+                            /* 0078 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xA7
+                        }, 
+
+                        "AAPL00,override-no-edid", 
+                        Buffer (0x80)
+                        {
+                            /* 0000 */   0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,
+                            /* 0008 */   0x51, 0xF3, 0x91, 0x50, 0x04, 0x00, 0x00, 0x00,
+                            /* 0010 */   0x0E, 0x10, 0x01, 0x03, 0x80, 0x1D, 0x11, 0xFF,
+                            /* 0018 */   0x2F, 0x00, 0x00, 0xA0, 0x57, 0x49, 0x9B, 0x26,
+                            /* 0020 */   0x10, 0x48, 0x4F, 0x00, 0x00, 0x00, 0x01, 0x01,
+                            /* 0028 */   0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                            /* 0030 */   0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0xC6, 0x1D,
+                            /* 0038 */   0x56, 0x02, 0x51, 0x00, 0x0C, 0x30, 0x22, 0x70,
+                            /* 0040 */   0x12, 0x00, 0x27, 0xA6, 0x10, 0x00, 0x00, 0x18,
+                            /* 0048 */   0xDA, 0x13, 0x56, 0x02, 0x51, 0x00, 0x0C, 0x30,
+                            /* 0050 */   0x22, 0x70, 0x12, 0x00, 0x27, 0xA6, 0x10, 0x00,
+                            /* 0058 */   0x00, 0x18, 0x00, 0x00, 0x00, 0xFC, 0x00, 0x49,
+                            /* 0060 */   0x6E, 0x74, 0x65, 0x72, 0x6E, 0x61, 0x6C, 0x20,
+                            /* 0068 */   0x4C, 0x43, 0x44, 0x0A, 0x00, 0x00, 0x00, 0xFD,
+                            /* 0070 */   0x00, 0x00, 0x3C, 0x00, 0x3D, 0x08, 0x00, 0x00,
+                            /* 0078 */   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xA7
+                        }
+                    }, Local0)
+                DTGP (Arg0, Arg1, Arg2, Arg3, RefOf (Local0))
+                Return (Local0)
+            }
+        }
+
+        Device (PNLF)
+        {
+            Name (_HID, EisaId ("APP0002"))  // _HID: Hardware ID
+            Name (_CID, "backlight")  // _CID: Compatible ID
+            Name (_UID, 0x0A)  // _UID: Unique ID
+            Name (_STA, 0x0B)  // _STA: Status
+            Method (_BLS, 0, NotSerialized)
+            {
+                Return (Package (0x11)
+                {
+                    0x50, 
+                    0x0132, 
+                    0x0161, 
+                    0x0191, 
+                    0x01D1, 
+                    0x0218, 
+                    0x0266, 
+                    0x02B0, 
+                    0x0396, 
+                    0x04C8, 
+                    0x065B, 
+                    0x0873, 
+                    0x0B24, 
+                    0x0EBB, 
+                    0x103A, 
+                    0x11FF, 
+                    0x12FF
+                })
+            }
+
+            Method (_BQL, 1, NotSerialized)
+            {
+                Divide (Arg0, 0x06, , Local1)
+                Return (DerefOf (Index (_BLS (), Local1)))
+            }
+
+            Method (_BQI, 1, NotSerialized)
+            {
+                Store (Zero, Local0)
+                Store (Zero, Local4)
+                While (LLessEqual (Local0, 0x10))
+                {
+                    Multiply (Local0, 0x06, Local2)
+                    Store (_BQL (Local2), Local3)
+                    If (LEqual (Arg0, Local3))
+                    {
+                        Store (Local0, Local4)
+                    }
+
+                    Increment (Local0)
+                }
+
+                Return (Local4)
+            }
+
+            Method (_BCL, 0, NotSerialized)  // _BCL: Brightness Control Levels
+            {
+                Return (Package (0x13)
+                {
+                    0x64, 
+                    0x32, 
+                    Zero, 
+                    0x06, 
+                    0x0C, 
+                    0x12, 
+                    0x18, 
+                    0x1E, 
+                    0x24, 
+                    0x2A, 
+                    0x30, 
+                    0x36, 
+                    0x3C, 
+                    0x42, 
+                    0x48, 
+                    0x4E, 
+                    0x54, 
+                    0x5A, 
+                    0x64
+                })
+            }
+
+            Method (_BCM, 1, NotSerialized)  // _BCM: Brightness Control Method
+            {
+                Store (0x80000000, LEV2)
+                If (LGreaterEqual (Arg0, 0x64))
+                {
+                    Store (0x12FF, LEVL)
+                }
+                Else
+                {
+                    If (LGreaterEqual (Arg0, 0x5A))
+                    {
+                        Store (0x11FF, LEVL)
+                    }
+                    Else
+                    {
+                        If (LGreaterEqual (Arg0, 0x54))
+                        {
+                            Store (0x103A, LEVL)
+                        }
+                        Else
+                        {
+                            If (LGreaterEqual (Arg0, 0x4E))
+                            {
+                                Store (0x0EBB, LEVL)
+                            }
+                            Else
+                            {
+                                If (LGreaterEqual (Arg0, 0x48))
+                                {
+                                    Store (0x0B24, LEVL)
+                                }
+                                Else
+                                {
+                                    If (LGreaterEqual (Arg0, 0x42))
+                                    {
+                                        Store (0x0873, LEVL)
+                                    }
+                                    Else
+                                    {
+                                        If (LGreaterEqual (Arg0, 0x3C))
+                                        {
+                                            Store (0x065B, LEVL)
+                                        }
+                                        Else
+                                        {
+                                            If (LGreaterEqual (Arg0, 0x36))
+                                            {
+                                                Store (0x04C8, LEVL)
+                                            }
+                                            Else
+                                            {
+                                                If (LGreaterEqual (Arg0, 0x30))
+                                                {
+                                                    Store (0x0396, LEVL)
+                                                }
+                                                Else
+                                                {
+                                                    If (LGreaterEqual (Arg0, 0x2A))
+                                                    {
+                                                        Store (0x02B0, LEVL)
+                                                    }
+                                                    Else
+                                                    {
+                                                        If (LGreaterEqual (Arg0, 0x24))
+                                                        {
+                                                            Store (0x0266, LEVL)
+                                                        }
+                                                        Else
+                                                        {
+                                                            If (LGreaterEqual (Arg0, 0x1E))
+                                                            {
+                                                                Store (0x0218, LEVL)
+                                                            }
+                                                            Else
+                                                            {
+                                                                If (LGreaterEqual (Arg0, 0x18))
+                                                                {
+                                                                    Store (0x01B1, LEVL)
+                                                                }
+                                                                Else
+                                                                {
+                                                                    If (LGreaterEqual (Arg0, 0x12))
+                                                                    {
+                                                                        Store (0x0161, LEVL)
+                                                                    }
+                                                                    Else
+                                                                    {
+                                                                        If (LGreaterEqual (Arg0, 0x0C))
+                                                                        {
+                                                                            Store (0x50, LEVL)
+                                                                        }
+                                                                        Else
+                                                                        {
+                                                                            If (LGreaterEqual (Arg0, 0x06))
+                                                                            {
+                                                                                Store (0x25, LEVL)
+                                                                            }
+                                                                            Else
+                                                                            {
+                                                                                If (LGreaterEqual (Arg0, Zero))
+                                                                                {
+                                                                                    Store (0x12, LEVL)
+                                                                                }
+                                                                                Else
+                                                                                {
+                                                                                    Store (0x11FF, LEVL)
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
+            }
+
+            Method (_BQC, 0, NotSerialized)  // _BQC: Brightness Query Current
+            {
+                Return (^^GFX0.DD02._BQC ())
+            }
+
+            Method (_DOS, 1, NotSerialized)  // _DOS: Disable Output Switching
+            {
+                ^^GFX0._DOS (Arg0)
             }
         }
     }
@@ -12180,5 +12746,170 @@ DefinitionBlock ("iASLzp0gPl.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
         Zero, 
         Zero
     })
+    Device (RMDT)
+    {
+        Name (_HID, "RMD0000")  // _HID: Hardware ID
+        Name (RING, Package (0x0100) {})
+        Mutex (RTMX, 0x00)
+        Name (HEAD, Zero)
+        Name (TAIL, Zero)
+        Method (PUSH, 1, NotSerialized)
+        {
+            Acquire (RTMX, 0xFFFF)
+            Add (HEAD, One, Local0)
+            If (LGreaterEqual (Local0, SizeOf (RING)))
+            {
+                Store (Zero, Local0)
+            }
+
+            If (LNotEqual (Local0, TAIL))
+            {
+                Store (Arg0, Index (RING, HEAD))
+                Store (Local0, HEAD)
+            }
+
+            Release (RTMX)
+        }
+
+        Method (FTCH, 0, NotSerialized)
+        {
+            Acquire (RTMX, 0xFFFF)
+            Store (Zero, Local0)
+            If (LNotEqual (HEAD, TAIL))
+            {
+                Store (DerefOf (Index (RING, TAIL)), Local0)
+                Increment (TAIL)
+                If (LGreaterEqual (TAIL, SizeOf (RING)))
+                {
+                    Store (Zero, TAIL)
+                }
+            }
+
+            Release (RTMX)
+            Return (Local0)
+        }
+
+        Method (COUN, 0, NotSerialized)
+        {
+            Acquire (RTMX, 0xFFFF)
+            Subtract (HEAD, TAIL, Local0)
+            If (LLess (Local0, Zero))
+            {
+                Add (Local0, SizeOf (RING), Local0)
+            }
+
+            Release (RTMX)
+            Return (Local0)
+        }
+
+        Method (P1, 1, NotSerialized)
+        {
+            PUSH (Arg0)
+        }
+
+        Method (P2, 2, Serialized)
+        {
+            Name (TEMP, Package (0x02) {})
+            Store (Arg0, Index (TEMP, Zero))
+            Store (Arg1, Index (TEMP, One))
+            PUSH (TEMP)
+        }
+
+        Method (P3, 3, Serialized)
+        {
+            Name (TEMP, Package (0x03) {})
+            Store (Arg0, Index (TEMP, Zero))
+            Store (Arg1, Index (TEMP, One))
+            Store (Arg2, Index (TEMP, 0x02))
+            PUSH (TEMP)
+        }
+
+        Method (P4, 4, Serialized)
+        {
+            Name (TEMP, Package (0x04) {})
+            Store (Arg0, Index (TEMP, Zero))
+            Store (Arg1, Index (TEMP, One))
+            Store (Arg2, Index (TEMP, 0x02))
+            Store (Arg3, Index (TEMP, 0x03))
+            PUSH (TEMP)
+        }
+
+        Method (P5, 5, Serialized)
+        {
+            Name (TEMP, Package (0x05) {})
+            Store (Arg0, Index (TEMP, Zero))
+            Store (Arg1, Index (TEMP, One))
+            Store (Arg2, Index (TEMP, 0x02))
+            Store (Arg3, Index (TEMP, 0x03))
+            Store (Arg4, Index (TEMP, 0x04))
+            PUSH (TEMP)
+        }
+
+        Method (P6, 6, Serialized)
+        {
+            Name (TEMP, Package (0x06) {})
+            Store (Arg0, Index (TEMP, Zero))
+            Store (Arg1, Index (TEMP, One))
+            Store (Arg2, Index (TEMP, 0x02))
+            Store (Arg3, Index (TEMP, 0x03))
+            Store (Arg4, Index (TEMP, 0x04))
+            Store (Arg5, Index (TEMP, 0x05))
+            PUSH (TEMP)
+        }
+
+        Method (P7, 7, Serialized)
+        {
+            Name (TEMP, Package (0x07) {})
+            Store (Arg0, Index (TEMP, Zero))
+            Store (Arg1, Index (TEMP, One))
+            Store (Arg2, Index (TEMP, 0x02))
+            Store (Arg3, Index (TEMP, 0x03))
+            Store (Arg4, Index (TEMP, 0x04))
+            Store (Arg5, Index (TEMP, 0x05))
+            Store (Arg6, Index (TEMP, 0x06))
+            PUSH (TEMP)
+        }
+    }
+
+    Method (DTGP, 5, NotSerialized)
+    {
+        If (LEqual (Arg0, Buffer (0x10)
+                {
+                    /* 0000 */   0xC6, 0xB7, 0xB5, 0xA0, 0x18, 0x13, 0x1C, 0x44,
+                    /* 0008 */   0xB0, 0xC9, 0xFE, 0x69, 0x5E, 0xAF, 0x94, 0x9B
+                }))
+        {
+            If (LEqual (Arg1, One))
+            {
+                If (LEqual (Arg2, Zero))
+                {
+                    Store (Buffer (One)
+                        {
+                             0x03
+                        }, Arg4)
+                    Return (One)
+                }
+
+                If (LEqual (Arg2, One))
+                {
+                    Return (One)
+                }
+            }
+        }
+
+        Store (Buffer (One)
+            {
+                 0x00
+            }, Arg4)
+        Return (Zero)
+    }
+
+    Method (PINI, 0, NotSerialized)
+    {
+        Store (Zero, \_SB.PCI0.EHC1.HCBO)
+        Store (One, \_SB.PCI0.EHC1.HCOO)
+        Store (Zero, \_SB.PCI0.EHC2.HCBO)
+        Store (One, \_SB.PCI0.EHC2.HCOO)
+    }
 }
 
