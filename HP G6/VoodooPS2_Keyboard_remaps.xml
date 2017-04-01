@@ -1,0 +1,22 @@
+					<key>Custom ADB Map</key>
+					<array>
+						<string>;Items must be strings in the form of scanfrom=adbto (in hex)</string>
+						<string>e032=ca;remap fn+f5  to browser | launchpad</string>
+						<string>e010=a6;remap fn+f6  to previous</string>
+						<string>e022=50;remap fn+f7  to play/pause</string>
+						<string>e019=5a;remap fn+f8  to next</string>
+						<string>e02e=89;remap fn+f9  to volume down</string>
+						<string>e030=e5;remap fn+f10  to volume up</string>
+						<string>e020=e9;remap fn+f11  to volume mute</string>
+						<string>;e02b=6b;remap fn+f2 to brightness down</string>
+						<string>;e005=71;remap fn+f2 to brightness down Commented as done by DSDT</string>
+					</array>
+					<key>Custom PS2 Map</key>
+					<array>
+						<string>;Items must be strings in the form of scanfrom=scanto (in hex)</string>
+						<string>;e010=e009;remap e010 to fn+f6</string>
+						<string>e02b=0; disable bougos fn+f2,f3</string>
+						<string>3a=e01d;remap capslock to rightcontrol</string>
+						<string>e027=0;disable discrete fnkeys toggle</string>
+						<string>e028=0;disable discrete trackpad toggle</string>
+					</array>

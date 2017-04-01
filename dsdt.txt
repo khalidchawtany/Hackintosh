@@ -3,20 +3,20 @@
  * AML Disassembler version 20131218-64 [Jan  8 2014]
  * Copyright (c) 2000 - 2013 Intel Corporation
  * 
- * Disassembly of iASLJuGTvV.aml, Sat Apr  1 09:57:55 2017
+ * Disassembly of iASLCpKN0R.aml, Sat Apr  1 09:59:54 2017
  *
  * Original Table Header:
  *     Signature        "DSDT"
- *     Length           0x0000D842 (55362)
+ *     Length           0x0000D816 (55318)
  *     Revision         0x01 **** 32-bit table (V1), no 64-bit math support
- *     Checksum         0x3A
+ *     Checksum         0x51
  *     OEM ID           "HP    "
  *     OEM Table ID     "1670    "
  *     OEM Revision     0x00000000 (0)
  *     Compiler ID      "INTL"
- *     Compiler Version 0x20100331 (537920305)
+ *     Compiler Version 0x20131218 (538120728)
  */
-DefinitionBlock ("iASLJuGTvV.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
+DefinitionBlock ("iASLCpKN0R.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 {
     /*
      * iASL Warning: There were 6 external control methods found during
@@ -2950,16 +2950,14 @@ DefinitionBlock ("iASLJuGTvV.aml", "DSDT", 1, "HP    ", "1670    ", 0x00000000)
 
                     Method (_Q10, 0, NotSerialized)  // _Qxx: EC Query
                     {
-                        Store (0x03, ^^^^WMID.WEI0)
-                        Store (Zero, ^^^^WMID.WEI1)
-                        Notify (WMID, 0x80)
+                        Notify (PS2K, 0x0205)
+                        Notify (PS2K, 0x0285)
                     }
 
                     Method (_Q11, 0, NotSerialized)  // _Qxx: EC Query
                     {
-                        Store (0x02, ^^^^WMID.WEI0)
-                        Store (Zero, ^^^^WMID.WEI1)
-                        Notify (WMID, 0x80)
+                        Notify (PS2K, 0x0245)
+                        Notify (PS2K, 0x02C5)
                     }
 
                     Method (_Q15, 0, NotSerialized)  // _Qxx: EC Query
